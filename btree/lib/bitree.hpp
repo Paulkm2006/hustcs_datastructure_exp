@@ -57,6 +57,7 @@ public:
 	void load(const char* filename);
 };
 
+// 判断关键字k是否存在于二叉树中
 template <typename Key, typename Value>
 inline bool BiTree<Key, Value>::keyExists(Key k) const
 {
@@ -65,6 +66,7 @@ inline bool BiTree<Key, Value>::keyExists(Key k) const
 	return keys.find(k) != keys.end();
 }
 
+// 通过前序遍历的方式创建二叉树
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::create(T *def)
 {
@@ -98,6 +100,7 @@ inline void BiTree<Key, Value>::create(T *def)
 	buildTree(head, index);
 }
 
+// 销毁二叉树
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::destroy()
 {
@@ -107,6 +110,7 @@ inline void BiTree<Key, Value>::destroy()
 	keys.clear(); // 清空关键字集合
 }
 
+// 清空二叉树
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::clear()
 {
@@ -120,6 +124,7 @@ inline void BiTree<Key, Value>::clear()
 	return;
 }
 
+// 判断二叉树是否为空
 template <typename Key, typename Value>
 inline bool BiTree<Key, Value>::isEmpty() const
 {
@@ -128,6 +133,7 @@ inline bool BiTree<Key, Value>::isEmpty() const
 	return head->left == nullptr && head->right == nullptr ? 1:0;
 }
 
+// 获取二叉树深度
 template <typename Key, typename Value>
 inline int BiTree<Key, Value>::depth() const
 {
@@ -146,6 +152,7 @@ inline int BiTree<Key, Value>::depth() const
 	return getDepth(head);
 }
 
+// 重载下标运算符，获取二叉树中关键字为k的元素
 template <typename Key, typename Value>
 inline std::pair<Key, Value> BiTree<Key, Value>::operator[](Key k) const
 {
@@ -162,18 +169,18 @@ inline std::pair<Key, Value> BiTree<Key, Value>::operator[](Key k) const
 				
 			Node<Key, Value>* leftResult = findNode(node->left.get());
 			if (leftResult != nullptr)
-				return leftResult;
+				return leftResult; // 如果在左子树中找到了，返回结果
 				
 			return findNode(node->right.get());
 		};
 
-	// Start the search from the root
 	Node<Key, Value>* result = findNode(head.get());
 	if (result != nullptr)
 		return result->data;
 	throw NOT_FOUND;
 }
 
+// 修改二叉树中关键字为e的元素的值为newVal
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::assign(T data)
 {
@@ -197,6 +204,7 @@ inline void BiTree<Key, Value>::assign(T data)
 	assignHelper(head.get());
 }
 
+// 查找二叉树中关键字为e的元素的兄弟结点
 template <typename Key, typename Value>
 inline std::pair<Key, Value> BiTree<Key, Value>::getSibling(Key k) const
 {
@@ -205,12 +213,12 @@ inline std::pair<Key, Value> BiTree<Key, Value>::getSibling(Key k) const
 	using T = std::pair<Key, Value>;
 	std::function<T(Node<Key, Value>*)> searchHelper = [&](Node<Key, Value>* node) -> T {
 		if (node == nullptr)
-			return T(0, 0); // 返回一个空的pair
+			return T(Key(), Value()); // 返回一个空的pair
 
 		if (node->left && node->left->data.first == k) {
-			return node->right ? node->right->data : T(0, 0);
+			return node->right ? node->right->data : T(Key(), Value());
 		} else if (node->right && node->right->data.first == k) {
-			return node->left ? node->left->data : T(0, 0);
+			return node->left ? node->left->data : T(Key(), Value());
 		}
 
 		T leftResult = searchHelper(node->left.get());
@@ -222,6 +230,7 @@ inline std::pair<Key, Value> BiTree<Key, Value>::getSibling(Key k) const
 	return searchHelper(head.get());
 }
 
+// 在键为k的节点的dir位置插入新节点
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::insert(Key k, T data, InsertDirections dir)
 {
@@ -233,7 +242,7 @@ inline void BiTree<Key, Value>::insert(Key k, T data, InsertDirections dir)
 	Node<Key, Value>* newNode = new Node<Key, Value>(data); // 创建新节点
 	keys.insert(data.first); // 插入新节点的关键字到集合中
 	
-	if(dir==ROOT) // 如果插入到根节点
+	if(dir==ROOT) // 插入到根节点
 	{
 		newNode->right = std::move(head); // 将原来的头赋值给新节点右子树
 		head.reset(newNode); // 将新节点赋值给头
@@ -263,6 +272,7 @@ inline void BiTree<Key, Value>::insert(Key k, T data, InsertDirections dir)
 	insertHelper(head.get());
 }
 
+// 删除关键字为k的结点
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::deleteNode(Key k)
 {
@@ -284,7 +294,7 @@ inline void BiTree<Key, Value>::deleteNode(Key k)
 			} else { // 两个子树都存在
 				Node<Key, Value>* current = node->left.get();
 				while (current->right != nullptr) {
-					current = current->right.get();
+					current = current->right.get(); // 找到左子树的最右节点
 				}
 				current->right = std::move(node->right);
 				node = std::move(node->left);
@@ -299,6 +309,7 @@ inline void BiTree<Key, Value>::deleteNode(Key k)
 	deleteHelper(head);
 }
 
+// 先序遍历二叉树
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::preOrderTraverse() const
 {
@@ -317,6 +328,7 @@ inline void BiTree<Key, Value>::preOrderTraverse() const
 	}
 }
 
+// 中序遍历二叉树
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::inOrderTraverse() const
 {
@@ -336,6 +348,7 @@ inline void BiTree<Key, Value>::inOrderTraverse() const
 	}
 }
 
+// 后序遍历二叉树
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::postOrderTraverse() const
 {
@@ -343,7 +356,7 @@ inline void BiTree<Key, Value>::postOrderTraverse() const
 		throw NOT_INITIALIZED;
 	std::stack<Node<Key, Value>*> stack;
 	Node<Key, Value> *current = head.get();
-	Node<Key, Value> *lastVisited = nullptr;
+	Node<Key, Value> *lastVisited = nullptr; // 上一个访问的节点，用于标记右子树是否访问
 
 	while (current || !stack.empty())
 	{
@@ -368,6 +381,7 @@ inline void BiTree<Key, Value>::postOrderTraverse() const
 	}
 }
 
+// 层序遍历二叉树
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::levelOrderTraverse() const
 {
@@ -386,13 +400,14 @@ inline void BiTree<Key, Value>::levelOrderTraverse() const
 	}
 }
 
+// 求二叉树的最大路径和
 template <typename Key, typename Value>
 inline Value BiTree<Key, Value>::maxPathSum() const
 {
 	if (head == nullptr)
 		throw NOT_INITIALIZED;
 
-	if constexpr (std::is_arithmetic<Value>::value) {
+	if constexpr (std::is_arithmetic<Value>::value) { // 检查Value是否为算术类型
 		Value maxSum = std::numeric_limits<Value>::lowest();
 		std::function<Value(Node<Key, Value> *)> maxPathHelper = [&](Node<Key, Value> *node) -> Value
 		{
@@ -410,6 +425,8 @@ inline Value BiTree<Key, Value>::maxPathSum() const
 		throw NOT_ARITHMETIC;
 	}
 }
+
+// 查找二叉树中k1和k2的最近公共祖先
 template <typename Key, typename Value>
 inline std::pair<Key, Value> BiTree<Key, Value>::LCA(Key k1, Key k2) const
 {
@@ -421,7 +438,7 @@ inline std::pair<Key, Value> BiTree<Key, Value>::LCA(Key k1, Key k2) const
 	using T = std::pair<Key, Value>;
 	std::function<T(Node<Key, Value>*)> LCAHelper = [&](Node<Key, Value>* node) -> T {
 		if (node == nullptr)
-			return T(0, 0);
+			return T(Key(), Value());
 		if (node->data.first == k1 || node->data.first == k2)
 			return node->data;
 		T leftLCA = LCAHelper(node->left.get());
@@ -433,6 +450,7 @@ inline std::pair<Key, Value> BiTree<Key, Value>::LCA(Key k1, Key k2) const
 	return LCAHelper(head.get());
 }
 
+// 将左右节点交换
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::invertTree()
 {
