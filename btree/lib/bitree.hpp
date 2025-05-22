@@ -39,7 +39,7 @@ public:
 	bool isEmpty() const; // 判断二叉树是否为空
 	int depth() const; // 获取二叉树深度
 	T operator[](Key k) const; // 重载下标运算符
-	void assign(T data); // 修改二叉树中关键字为e的元素的值为newVal
+	void assign(Key k, T data); // 修改二叉树中关键字为e的元素的值为newVal
 	T getSibling(Key k) const; // 查找二叉树中关键字为e的元素的兄弟结点
 	void insert(Key k, T data, InsertDirections dir); // 插入元素k和v
 	void deleteNode(Key k); // 删除关键字为k的结点
@@ -49,9 +49,9 @@ public:
 	void postOrderTraverse() const; // 后序遍历二叉树
 	void levelOrderTraverse() const; // 层序遍历二叉树
 
-	Value maxPathSum() const; // 求二叉树的最大路径和
+	Key maxPathSum() const; // 求二叉树的最大路径和
 	T LCA(Key k1, Key k2) const; // 查找二叉树中k1和k2的最近公共祖先
-	void invertTree(); // 反转二叉树
+	void invert(); // 反转二叉树
 
 	void save(const char* filename) const; // 保存二叉树到文件
 	void load(const char* filename);
@@ -182,17 +182,22 @@ inline std::pair<Key, Value> BiTree<Key, Value>::operator[](Key k) const
 
 // 修改二叉树中关键字为e的元素的值为newVal
 template <typename Key, typename Value>
-inline void BiTree<Key, Value>::assign(T data)
+inline void BiTree<Key, Value>::assign(Key k, T data)
 {
 	if (head == nullptr)
 		throw NOT_INITIALIZED;
-	if (!keyExists(data.first))
+	if (!keyExists(k))
 		throw NOT_FOUND;
 	std::function<void(Node<Key, Value>*)> assignHelper = [&](Node<Key, Value>* node) -> void {
 		if (node == nullptr)
 			return;
 		
-		if (node->data.first == data.first) {
+		if (node->data.first == k) {
+			if (keyExists(data.first))
+				throw CONFLICT;
+			keys.erase(node->data.first); // 删除旧的关键字
+			keys.insert(data.first); // 插入新的关键字
+			node->data.first = data.first; // 更新关键字
 			node->data.second = data.second;
 			return;
 		}
@@ -402,21 +407,21 @@ inline void BiTree<Key, Value>::levelOrderTraverse() const
 
 // 求二叉树的最大路径和
 template <typename Key, typename Value>
-inline Value BiTree<Key, Value>::maxPathSum() const
+inline Key BiTree<Key, Value>::maxPathSum() const
 {
 	if (head == nullptr)
 		throw NOT_INITIALIZED;
 
-	if constexpr (std::is_arithmetic<Value>::value) { // 检查Value是否为算术类型
-		Value maxSum = std::numeric_limits<Value>::lowest();
-		std::function<Value(Node<Key, Value> *)> maxPathHelper = [&](Node<Key, Value> *node) -> Value
+	if constexpr (std::is_arithmetic<Key>::value) { // 检查Key是否为算术类型
+		Key maxSum = std::numeric_limits<Key>::lowest();
+		std::function<Key(Node<Key, Value> *)> maxPathHelper = [&](Node<Key, Value> *node) -> Key
 		{
 			if (node == nullptr)
 				return 0;
-			Value leftSum = maxPathHelper(node->left.get());
-			Value rightSum = maxPathHelper(node->right.get());
-			Value currentMax = std::max(node->data.second, std::max(leftSum + node->data.second, rightSum + node->data.second));
-			maxSum = std::max(maxSum, std::max(currentMax, leftSum + rightSum + node->data.second));
+			Key leftSum = maxPathHelper(node->left.get());
+			Key rightSum = maxPathHelper(node->right.get());
+			Key currentMax = std::max(node->data.first, std::max(leftSum + node->data.first, rightSum + node->data.first));
+			maxSum = std::max(maxSum, currentMax);
 			return currentMax;
 		};
 		maxPathHelper(head.get());
@@ -452,7 +457,7 @@ inline std::pair<Key, Value> BiTree<Key, Value>::LCA(Key k1, Key k2) const
 
 // 将左右节点交换
 template <typename Key, typename Value>
-inline void BiTree<Key, Value>::invertTree()
+inline void BiTree<Key, Value>::invert()
 {
 	if (head == nullptr)
 		throw NOT_INITIALIZED;

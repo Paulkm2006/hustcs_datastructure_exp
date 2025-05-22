@@ -3,7 +3,9 @@
 
 #include <fstream>
 #include <queue>
+#include <map>
 
+// 保存二叉树。文件格式为：<节点在线性序列中的位置> <key> <value>
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::save(const char *filename) const
 {
@@ -12,26 +14,24 @@ inline void BiTree<Key, Value>::save(const char *filename) const
 		throw std::runtime_error("无法打开文件");
 	if (head == nullptr)
 		throw NOT_INITIALIZED;
-
-	std::queue<Node<Key, Value>*> q;
-	q.push(head.get());
+	std::queue<std::pair<int, Node<Key, Value>*>> q;
+	q.push({1, head.get()});
 	while (!q.empty())
 	{
-		Node<Key, Value> *current = q.front();
+		auto [pos, current] = q.front();
 		q.pop();
 
-		if (current == nullptr)
-			file << Key() << " " << Value() << " ";
-		else
+		if (current != nullptr)
 		{
-			file << current->data.first << " " << current->data.second << " ";
-			q.push(current->left.get());
-			q.push(current->right.get());
+			file << pos << " " << current->data.first << " " << current->data.second << " ";
+			q.push({pos * 2, current->left.get()});
+			q.push({pos * 2 + 1, current->right.get()});
 		}
 	}
 	file.close();
 }
 
+// 加载二叉树
 template <typename Key, typename Value>
 inline void BiTree<Key, Value>::load(const char *filename)
 {
@@ -41,29 +41,46 @@ inline void BiTree<Key, Value>::load(const char *filename)
 	if (!file.is_open())
 		throw std::runtime_error("无法打开文件");
 
-	Key k;
-	Value v;
-	file >> k >> v;
-	head = std::make_unique<Node<Key, Value>>(k, v);
+	int pos;
+	Key key;
+	Value value;
 
-	std::queue<Node<Key, Value>*> q;
-	q.push(head.get());
+	std::map<int, Node<Key, Value> *> positionMap; // 用于保存对应编号的节点
 
-	while (!q.empty() && !file.eof())
+	while (file >> pos >> key >> value)
 	{
-		Node<Key, Value> *current = q.front();
-		q.pop();
-		file >> k >> v;
-		if (k != Key())
+		if (pos == 1)
 		{
-			current->left = std::make_unique<Node<Key, Value>>(k, v);
-			q.push(current->left.get());
+			head = std::make_unique<Node<Key, Value>>(key, value);
+			positionMap[pos] = head.get();
+			keys.insert(key);
 		}
-		file >> k >> v;
-		if (k != Key())
+		else
 		{
-			current->right = std::make_unique<Node<Key, Value>>(k, v);
-			q.push(current->right.get());
+			int parentPos = pos / 2; // 父节点的编号
+
+			auto parent_it = positionMap.find(parentPos);
+			if (parent_it == positionMap.end())
+			{
+				throw std::runtime_error("文件格式错误，找不到父节点");
+			}
+
+			Node<Key, Value> *parentNode = parent_it->second; // 找到父节点
+
+			std::unique_ptr<Node<Key, Value>> newNode =
+				std::make_unique<Node<Key, Value>>(key, value);
+
+			if (pos % 2 == 0) // 左子节点
+			{
+				parentNode->left = std::move(newNode);
+				positionMap[pos] = parentNode->left.get();
+			}
+			else
+			{
+				parentNode->right = std::move(newNode);
+				positionMap[pos] = parentNode->right.get();
+			}
+			keys.insert(key);
 		}
 	}
 

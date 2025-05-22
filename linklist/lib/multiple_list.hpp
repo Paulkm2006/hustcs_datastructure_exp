@@ -4,18 +4,18 @@
 template <typename T>
 class MultipleList {
 private:
-	int length; // 线性表个数
-	int maxSize; // 线性表最大个数
-	MyList<T>* lists; // 线性表数组
-	char** names; // 线性表名称数组
+	int length; // 单链表个数
+	int maxSize; // 单链表最大个数
+	MyList<T>* lists; // 单链表数组
+	char** names; // 单链表名称数组
 public:
 	MultipleList(); // 构造函数
 	~MultipleList(); // 析构函数
-	int addList(const char* name); // 添加线性表
-	int removeList(int n); // 删除线性表
-	int locateList(const char* name) const; // 查找线性表
-	MyList<T>& operator[](int index); // 通过索引选择线性表
-	MyList<T>& operator[](const char* name); // 通过名称选择线性表
+	int addList(const char* name); // 添加单链表
+	int removeList(int n); // 删除单链表
+	int locateList(const char* name) const; // 查找单链表
+	MyList<T>& operator[](int index); // 通过索引选择单链表
+	MyList<T>& operator[](const char* name); // 通过名称选择单链表
 	int printAllListNames() const
 	{
 		if (lists == nullptr || names == nullptr)
@@ -29,7 +29,7 @@ public:
 };
 
 
-// 多线性表初始化
+// 多单链表初始化
 template <typename T>
 inline MultipleList<T>::MultipleList()
 {
@@ -43,7 +43,7 @@ inline MultipleList<T>::MultipleList()
 	}
 }
 
-// 多线性表析构
+// 多单链表析构
 template <typename T>
 inline MultipleList<T>::~MultipleList()
 {
@@ -60,7 +60,7 @@ inline MultipleList<T>::~MultipleList()
 }
 
 
-// 添加线性表
+// 添加单链表
 template <typename T>
 inline int MultipleList<T>::addList(const char *name)
 {
@@ -89,7 +89,7 @@ inline int MultipleList<T>::addList(const char *name)
 	return OK;
 }
 
-// 删除线性表
+// 删除单链表
 template <typename T>
 inline int MultipleList<T>::removeList(int n)
 {
@@ -107,7 +107,7 @@ inline int MultipleList<T>::removeList(int n)
 	return OK;
 }
 
-// 查找线性表
+// 查找单链表
 template <typename T>
 inline int MultipleList<T>::locateList(const char *name) const
 {
@@ -122,7 +122,7 @@ inline int MultipleList<T>::locateList(const char *name) const
 }
 
 
-// 通过索引选择线性表
+// 通过索引选择单链表
 template <typename T>
 inline MyList<T> &MultipleList<T>::operator[](int index)
 {
@@ -132,7 +132,7 @@ inline MyList<T> &MultipleList<T>::operator[](int index)
 }
 
 
-// 通过名称选择线性表
+// 通过名称选择单链表
 template <typename T>
 inline MyList<T> &MultipleList<T>::operator[](const char *name)
 {

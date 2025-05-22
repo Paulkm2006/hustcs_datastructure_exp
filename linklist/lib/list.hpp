@@ -20,8 +20,8 @@ struct Node
 template<typename T>
 class MyList {
 private:
-	int length; // 线性表当前长度
-	std::unique_ptr<Node<T>> head; // 指向线性表头结点的指针
+	int length; // 单链表当前长度
+	std::unique_ptr<Node<T>> head; // 指向单链表头结点的指针
 public:
 	MyList(); // 构造函数
 	~MyList(); // 析构函数
@@ -29,26 +29,26 @@ public:
 	MyList(MyList&& other) noexcept = default;
 	MyList& operator=(MyList&& other) noexcept = default;
 	
-	int initList(); // 初始化线性表
-	int destroyList(); // 销毁线性表
-	int clearList(); // 清空线性表
-	int isEmpty() const; // 判断线性表是否为空
-	int listLength() const; // 获取线性表长度
+	int initList(); // 初始化单链表
+	int destroyList(); // 销毁单链表
+	int clearList(); // 清空单链表
+	int isEmpty() const; // 判断单链表是否为空
+	int listLength() const; // 获取单链表长度
 	T operator[](int i) const; // 重载下标运算符
 	template <class Compare = std::less<T>>
-	int locateElem(T e, Compare cmp) const; // 查找线性表中第一个与e满足cmp的元素
-	int priorElem(T e) const; // 查找线性表中第一个值为e的前驱元素
-	int nextElem(T e) const; // 查找线性表中第一个值为e的后继元素
+	int locateElem(T e, Compare cmp) const; // 查找单链表中第一个与e满足cmp的元素
+	int priorElem(T e) const; // 查找单链表中第一个值为e的前驱元素
+	int nextElem(T e) const; // 查找单链表中第一个值为e的后继元素
 	int listInsert(int i, T e); // 在第i个位置插入元素e
 	int listDelete(int i); // 删除第i个位置的元素e
-	int listTraverse() const; // 遍历线性表
+	int listTraverse() const; // 遍历单链表
 
-	int ReverseList(); // 反转线性表
-	int RemoveNthFromEnd(int n); // 删除倒数第n个节点
-	int sortList(); // 排序线性表
+	int reverseList(); // 反转单链表
+	int removeNthFromEnd(int n); // 删除倒数第n个节点
+	int sortList(); // 排序单链表
 
-	int saveList(const char* filename) const; // 保存线性表到文件
-	int loadList(const char* filename); // 从文件加载线性表
+	int saveList(const char* filename) const; // 保存单链表到文件
+	int loadList(const char* filename); // 从文件加载单链表
 };
 
 // 构造函数
@@ -67,7 +67,7 @@ inline MyList<T>::~MyList()
 	length = 0;
 }
 
-// 初始化线性表
+// 初始化单链表
 template <typename T>
 inline int MyList<T>::initList()
 {
@@ -79,7 +79,7 @@ inline int MyList<T>::initList()
 	return OK;
 }
 
-// 销毁线性表
+// 销毁单链表
 template <typename T>
 inline int MyList<T>::destroyList()
 {
@@ -90,7 +90,7 @@ inline int MyList<T>::destroyList()
 	return OK;
 }
 
-// 清空线性表
+// 清空单链表
 template <typename T>
 inline int MyList<T>::clearList()
 {
@@ -102,7 +102,7 @@ inline int MyList<T>::clearList()
 	return OK;
 }
 
-// 判断线性表是否为空
+// 判断单链表是否为空
 template <typename T>
 inline int MyList<T>::isEmpty() const
 {
@@ -111,7 +111,7 @@ inline int MyList<T>::isEmpty() const
 	return length == 0 ? TRUE : FALSE;
 }
 
-// 获取线性表长度
+// 获取单链表长度
 template <typename T>
 inline int MyList<T>::listLength() const
 {
@@ -120,7 +120,7 @@ inline int MyList<T>::listLength() const
 	return length;
 }
 
-// 查找线性表中第一个与e满足cmp的元素
+// 查找单链表中第一个与e满足cmp的元素
 template <typename T>
 template <class Compare>
 inline int MyList<T>::locateElem(T e, Compare cmp) const
@@ -137,7 +137,7 @@ inline int MyList<T>::locateElem(T e, Compare cmp) const
 	return ERROR;
 }
 
-// 查找线性表中第一个值为e的前驱元素
+// 查找单链表中第一个值为e的前驱元素
 template <typename T>
 inline int MyList<T>::priorElem(T e) const
 {
@@ -149,7 +149,7 @@ inline int MyList<T>::priorElem(T e) const
 	return (*this)[i-1];
 }
 
-// 查找线性表中第一个值为e的后继元素
+// 查找单链表中第一个值为e的后继元素
 template <typename T>
 inline int MyList<T>::nextElem(T e) const
 {
@@ -197,8 +197,14 @@ inline int MyList<T>::listDelete(int i)
 		return INFEASIBLE;
 	if (i < 1 || i > length)
 		return ERROR;
+	if(i == 1)
+	{
+		head = std::move(head->next);
+		length--;
+		return OK;
+	}
 	Node<T>* current = head.get();
-	for (int j = 1; j < i; j++)
+	for (int j = 2; j < i; j++)
 	{
 		current = current->next.get();
 	}
@@ -207,7 +213,7 @@ inline int MyList<T>::listDelete(int i)
 	return OK;
 }
 
-// 遍历线性表
+// 遍历单链表
 template <typename T>
 inline int MyList<T>::listTraverse() const
 {
@@ -223,7 +229,7 @@ inline int MyList<T>::listTraverse() const
 	return OK;
 }
 
-// 排序线性表
+// 排序单链表
 // 使用插入排序算法
 template <typename T>
 inline int MyList<T>::sortList()
@@ -235,7 +241,7 @@ inline int MyList<T>::sortList()
 	std::unique_ptr<Node<T>> sorted = nullptr;
 	std::unique_ptr<Node<T>> current = std::move(head);
 
-	while (current) {
+	while (current->next) {
 		std::unique_ptr<Node<T>> next = std::move(current->next);
 		
 		if (!sorted || sorted->data >= current->data) {
@@ -278,15 +284,15 @@ inline T MyList<T>::operator[](int i) const
 	return current->data;
 }
 
-// 反转线性表
+// 反转单链表
 template <typename T>
-inline int MyList<T>::ReverseList()
+inline int MyList<T>::reverseList()
 {
 	if (head == nullptr)
 		return INFEASIBLE;
 	if (length <= 1)
 		return OK;
-	std::unique_ptr<Node<T>> prev = nullptr;
+	std::unique_ptr<Node<T>> prev = std::make_unique<Node<T>>();
 	std::unique_ptr<Node<T>> current = std::move(head);
 	std::unique_ptr<Node<T>> next = nullptr;
 	
@@ -296,6 +302,8 @@ inline int MyList<T>::ReverseList()
 		prev = std::move(current);
 		current = std::move(next);
 	}
+
+	
 	
 	head = std::move(prev);
 	return OK;
@@ -304,7 +312,7 @@ inline int MyList<T>::ReverseList()
 // 删除倒数第n个节点
 // 使用快慢指针
 template <typename T>
-inline int MyList<T>::RemoveNthFromEnd(int n)
+inline int MyList<T>::removeNthFromEnd(int n)
 {
 	if (head == nullptr)
 		return INFEASIBLE;
@@ -322,7 +330,7 @@ inline int MyList<T>::RemoveNthFromEnd(int n)
 		fast = fast->next.get();
 	}
 	
-	while (fast->next) {
+	while (fast->next->next) {
 		fast = fast->next.get();
 		slow = slow->next.get();
 	}

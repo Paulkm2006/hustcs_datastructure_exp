@@ -196,7 +196,7 @@ int main(void)
 		}
 		case 13:
 		{
-			ret = Lists[n].ReverseList();
+			ret = Lists[n].reverseList();
 			if (ret == INFEASIBLE)
 				cout << "链表不存在!" << endl;
 			else
@@ -208,7 +208,7 @@ int main(void)
 			int n2;
 			cout << "请输入要删除的倒数第n个元素: " << endl;
 			cin >> n2;
-			ret = Lists[n].RemoveNthFromEnd(n2);
+			ret = Lists[n].removeNthFromEnd(n2);
 			if (ret == INFEASIBLE)
 				cout << "链表不存在!" << endl;
 			else if (ret == ERROR)

@@ -8,7 +8,7 @@ using namespace std;
 
 int main(void)
 {
-	MultipleBiTree<int, int> BiTrees;
+	MultipleBiTree<int, char> BiTrees;
 	int n = 0;
 	BiTrees.addBiTree("default"); // 添加默认二叉树
 
@@ -48,7 +48,7 @@ int main(void)
 			case 1:
 			{
 				cout << "请输入二叉树的初始化数据: " << endl;
-				std::pair<int, int> def[100];
+				std::pair<int, char> def[100];
 				int i = 0;
 				do {
 					cin >> def[i].first >> def[i].second;
@@ -91,10 +91,11 @@ int main(void)
 			}
 			case 7:
 			{
-				cout << "请输入需要赋值的元素键和值: " << endl;
+				cout << "请输入需要赋值的元素键，新的键和和值: " << endl;
 				int i, e;
-				cin >> i >> e;
-				BiTrees[n].assign({ i, e });
+				char k;
+				cin >> i >> e >> k;
+				BiTrees[n].assign(i, { e, k });
 				cout << "赋值成功!" << endl;
 				break;
 			}
@@ -113,7 +114,8 @@ int main(void)
 			case 9:
 			{
 				cout << "请输入需要插入的位置、元素键、值和方向: " << endl;
-				int k, i, e, dir;
+				int k, i, dir;
+				char e;
 				cin >> k >> i >> e >> dir;
 				BiTrees[n].insert(k, { i, e }, static_cast<InsertDirections>(dir));
 				cout << "插入成功!" << endl;
@@ -164,7 +166,7 @@ int main(void)
 				break;
 			}
 			case 17:
-				BiTrees[n].invertTree();
+				BiTrees[n].invert();
 				cout << "二叉树反转成功!" << endl;
 				break;
 			case 18:
