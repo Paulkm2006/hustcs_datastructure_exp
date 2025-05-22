@@ -4,6 +4,7 @@
 #include <fstream>
 #include <set>
 
+// 写文件
 template <typename Key, typename Value>
 inline void Graph<Key, Value>::save(const char *filename) const
 {
@@ -25,7 +26,7 @@ inline void Graph<Key, Value>::save(const char *filename) const
 	{
 		for (const auto &arc : node.arcs)
 		{
-			if (visited.find({ node.data.first, arc->data.first }) == visited.end())
+			if (visited.find({ node.data.first, arc->data.first }) == visited.end()) // 确保每条边只写一遍
 			{
 				file << node.data.first << " " << arc->data.first << " ";
 				visited.insert({ arc->data.first, node.data.first });
@@ -35,6 +36,7 @@ inline void Graph<Key, Value>::save(const char *filename) const
 	file << -1 << " " << -1 << std::endl;
 }
 
+// 读文件
 template <typename Key, typename Value>
 inline void Graph<Key, Value>::load(const char *filename)
 {
@@ -49,7 +51,6 @@ inline void Graph<Key, Value>::load(const char *filename)
 	int vertexCount;
 	file >> vertexCount;
 	
-	// Read vertices
 	for (int i = 0; i < vertexCount; i++) {
 		Key key;
 		Value value;
